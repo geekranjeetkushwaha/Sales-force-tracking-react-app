@@ -1,0 +1,11 @@
+/* Visit page styles */
+.visit-container {
+  padding: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.visit-title {
+  font-size: 2rem;
+  font-weight: bold;
+}

@@ -1,0 +1,10 @@
+/* PJP page styles */
+.pjp-container {
+  padding: 32px;
+  width: 500px;
+}
+
+.pjp-title {
+  font-size: 2rem;
+  font-weight: bold;
+}
