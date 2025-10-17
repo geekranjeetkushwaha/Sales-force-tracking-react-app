@@ -391,6 +391,179 @@ npx vite preview --outDir dist-staging # Preview dist-staging/
 - **Camera access** is needed for visit verification photos
 - The project supports both **real API integration** and **mock data** for development
 
-## Add the following for experiment
+## ESLint Error Prevention Codes
 
--- /_ eslint-disable @typescript-eslint/no-explicit-any _/
+Use these ESLint disable comments during development to temporarily bypass specific rules. **Remember to remove them before production!**
+
+### Type Safety Overrides
+
+```typescript
+// Disable explicit any type checking
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const data: any = fetchData();
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+// Single line disable
+const result: any = processData(); // eslint-disable-line @typescript-eslint/no-explicit-any
+
+// Disable unused variables (useful for function parameters)
+const handleClick = (_event: MouseEvent) => {
+  // eslint-disable-line @typescript-eslint/no-unused-vars
+  console.log('Button clicked');
+};
+
+// Disable non-null assertion warnings
+const element = document.getElementById('root')!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+```
+
+### React-Specific Overrides
+
+```typescript
+// Disable React hooks dependency warnings
+useEffect(() => {
+  fetchData();
+}, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+// Disable React refresh warnings for components
+/* eslint-disable react-refresh/only-export-components */
+export const MyComponent = () => <div>Hello</div>;
+export const utilities = { helper: () => {} };
+/* eslint-enable react-refresh/only-export-components */
+
+// Disable missing key prop warnings
+const items = data.map((item, index) => ( // eslint-disable-line react/no-array-index-key
+  <div key={index}>{item}</div>
+));
+
+// Disable dangerous innerHTML warnings
+<div dangerouslySetInnerHTML={{ __html: content }} />; // eslint-disable-line react/no-danger
+```
+
+### Console and Debug Overrides
+
+```typescript
+// Allow console statements during development
+console.log('Debug info:', data); // eslint-disable-line no-console
+console.error('Error occurred:', error); // eslint-disable-line no-console
+
+// Disable console for entire file
+/* eslint-disable no-console */
+// All console statements in this file are allowed
+/* eslint-enable no-console */
+```
+
+### Function and Variable Overrides
+
+```typescript
+// Disable empty function warnings
+const noop = () => {}; // eslint-disable-line @typescript-eslint/no-empty-function
+
+// Disable prefer const warnings
+let counter = 0; // eslint-disable-line prefer-const
+// ... code that might reassign counter
+
+// Disable no-var warnings (legacy code)
+var legacyVariable = 'old code'; // eslint-disable-line no-var
+
+// Disable camelcase warnings for API responses
+const { user_id, full_name } = apiResponse; // eslint-disable-line @typescript-eslint/naming-convention
+```
+
+### Import and Module Overrides
+
+```typescript
+// Disable import order warnings
+import { Component } from 'react'; // eslint-disable-line import/order
+import axios from 'axios';
+
+// Disable dynamic require warnings
+const config = require(`./config/${env}.json`); // eslint-disable-line @typescript-eslint/no-require-imports
+
+// Disable default export warnings
+export = MyClass; // eslint-disable-line import/no-default-export
+```
+
+### Performance and Logic Overrides
+
+```typescript
+// Disable assignment in condition warnings
+let match;
+while ((match = regex.exec(text))) {
+  // eslint-disable-line no-cond-assign
+  // Process match
+}
+
+// Disable no-await-in-loop for intentional sequential processing
+for (const item of items) {
+  await processItem(item); // eslint-disable-line no-await-in-loop
+}
+
+// Disable complexity warnings for complex but necessary functions
+function complexLogic() {
+  // eslint-disable-line complexity
+  // Complex but necessary logic here
+}
+```
+
+### File-Level Overrides
+
+```typescript
+// Disable multiple rules for entire file
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, no-console */
+
+// Disable all ESLint rules for file (emergency only!)
+/* eslint-disable */
+// Entire file content
+/* eslint-enable */
+
+// Disable specific rule for entire file
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// File content with any types allowed
+```
+
+### Quick Development Patterns
+
+```typescript
+// Component with relaxed type checking
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const QuickComponent: React.FC<any> = (props) => {
+  return <div>{props.children}</div>;
+};
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+// API call with minimal typing
+const fetchData = async (): Promise<any> => { // eslint-disable-line @typescript-eslint/no-explicit-any
+  try {
+    const response = await axios.get('/api/data');
+    return response.data;
+  } catch (error) {
+    console.error('API Error:', error); // eslint-disable-line no-console
+    throw error;
+  }
+};
+
+// Event handler with ignored parameter
+const handleSubmit = (_formData: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+  // Implementation pending
+};
+```
+
+### Best Practices for Using Overrides
+
+1. **Be Specific**: Use rule-specific disables rather than disabling all rules
+2. **Temporary Only**: Add TODO comments to remove overrides later
+3. **Document Why**: Add comments explaining why the override is necessary
+4. **Minimal Scope**: Use single-line disables when possible instead of block disables
+5. **Review Regularly**: Remove overrides when proper implementation is added
+
+### Example with TODO Comments
+
+```typescript
+// TODO: Replace with proper typing once API schema is defined
+const apiResponse: any = await fetch('/api/users'); // eslint-disable-line @typescript-eslint/no-explicit-any
+
+// TODO: Add proper error handling
+useEffect(() => {
+  loadData();
+}, []); // eslint-disable-line react-hooks/exhaustive-deps
+```
