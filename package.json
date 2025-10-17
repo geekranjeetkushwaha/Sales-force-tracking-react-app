@@ -4,10 +4,21 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "npm run validate:env && vite",
+    "build": "npm run validate:env && tsc -b && vite build",
+    "build:dev": "npm run setup:env:dev -- --force && npm run build",
+    "build:staging": "npm run setup:env:staging -- --force && npm run build",
+    "build:prod": "npm run setup:env:prod -- --force && npm run build",
+    "build:advanced": "node scripts/build-env.js",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "setup:env": "node scripts/setup-env.js",
+    "setup:env:dev": "node scripts/setup-env.js development",
+    "setup:env:staging": "node scripts/setup-env.js staging", 
+    "setup:env:prod": "node scripts/setup-env.js production",
+    "validate:env": "node scripts/validate-env.js",
+    "setup": "npm install && npm run setup:env",
+    "postinstall": "node -e \"console.log('\\n🚀 Setup complete! Run: npm run setup:env')\""
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
