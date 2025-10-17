@@ -1,0 +1,52 @@
+/* PJP Details Modal Styles */
+.pjp-details-modal .ant-modal-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.pjp-details-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.pjp-details-modal .ant-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.pjp-details-modal .ant-descriptions-item-label {
+  font-weight: 600;
+  color: #374151 !important;
+  width: 120px;
+}
+
+.pjp-details-modal .ant-descriptions-item-content {
+  color: #6b7280 !important;
+}
+
+.pjp-details-modal .ant-tag {
+  border-radius: 12px;
+  padding: 2px 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pjp-details-modal {
+    margin: 0 16px;
+  }
+  
+  .pjp-details-modal .ant-modal {
+    max-width: calc(100vw - 32px);
+  }
+  
+  .pjp-details-modal .ant-modal-body {
+    padding: 16px;
+  }
+  
+  .pjp-details-modal .ant-descriptions-item-label {
+    width: 100px;
+    font-size: 13px;
+  }
+}

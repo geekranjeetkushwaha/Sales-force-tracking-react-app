@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import type { AuthState, AuthContextType, LoginCredentials, User } from './types';
+import type { AuthState, AuthContextType, LoginCredentials, User, OTPVerificationData, LoginResponse } from './types';
 import { authApi, type ApiError } from '../services/api';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -70,18 +70,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
-  const login = async (credentials: LoginCredentials): Promise<void> => {
+  const login = async (credentials: LoginCredentials): Promise<LoginResponse> => {
     dispatch({ type: 'LOGIN_START' });
     
     try {
       // Use API service for authentication
       const response = await authApi.login(credentials);
       
-      // Store auth data
-      localStorage.setItem('authToken', response.token);
-      localStorage.setItem('userData', JSON.stringify(response.user));
+      // Check if OTP is required
+      if (response.requiresOTP) {
+        dispatch({ type: 'LOGIN_FAILURE' });
+        return response;
+      }
       
-      dispatch({ type: 'LOGIN_SUCCESS', payload: response.user });
+      // Direct login success (no OTP required)
+      if (response.user && response.token) {
+        localStorage.setItem('authToken', response.token);
+        localStorage.setItem('userData', JSON.stringify(response.user));
+        dispatch({ type: 'LOGIN_SUCCESS', payload: response.user });
+      }
+      
+      return response;
     } catch (error: unknown) {
       dispatch({ type: 'LOGIN_FAILURE' });
       
@@ -92,6 +101,49 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       throw new Error('Login failed. Please try again.');
+    }
+  };
+
+  const verifyOTP = async (data: OTPVerificationData): Promise<void> => {
+    dispatch({ type: 'LOGIN_START' });
+    
+    try {
+      // Use API service for OTP verification
+      const response = await authApi.verifyOTP(data);
+      
+      if (response.user && response.token) {
+        // Store auth data
+        localStorage.setItem('authToken', response.token);
+        localStorage.setItem('userData', JSON.stringify(response.user));
+        
+        dispatch({ type: 'LOGIN_SUCCESS', payload: response.user });
+      } else {
+        throw new Error('Invalid response from server');
+      }
+    } catch (error: unknown) {
+      dispatch({ type: 'LOGIN_FAILURE' });
+      
+      // Handle API errors
+      if (error && typeof error === 'object' && 'message' in error) {
+        const apiError = error as ApiError;
+        throw new Error(apiError.message);
+      }
+      
+      throw new Error('OTP verification failed. Please try again.');
+    }
+  };
+
+  const resendOTP = async (email: string): Promise<void> => {
+    try {
+      await authApi.resendOTP(email);
+    } catch (error: unknown) {
+      // Handle API errors
+      if (error && typeof error === 'object' && 'message' in error) {
+        const apiError = error as ApiError;
+        throw new Error(apiError.message);
+      }
+      
+      throw new Error('Failed to resend OTP. Please try again.');
     }
   };
 
@@ -112,6 +164,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextType = {
     ...state,
     login,
+    verifyOTP,
+    resendOTP,
     logout,
   };
 

@@ -85,8 +85,8 @@ const Header: React.FC = () => {
             >
                 <nav className="flex flex-col p-4 gap-4">
                     <Link to="/" onClick={onClose} style={{ textDecoration: 'none', color: '#2563eb', fontWeight: 500 }}>Home</Link>
-                    <Link to="/visit" onClick={onClose} style={{ textDecoration: 'none', color: '#2563eb', fontWeight: 500 }}>Visit</Link>
-                    <Link to="/pjp" onClick={onClose} style={{ textDecoration: 'none', color: '#2563eb', fontWeight: 500 }}>PJP</Link>
+                    {/* <Link to="/visit" onClick={onClose} style={{ textDecoration: 'none', color: '#2563eb', fontWeight: 500 }}>Visit</Link>
+                    <Link to="/pjp" onClick={onClose} style={{ textDecoration: 'none', color: '#2563eb', fontWeight: 500 }}>PJP</Link> */}
                     <div className="border-t pt-4 mt-4">
                         <Button 
                             type="text" 

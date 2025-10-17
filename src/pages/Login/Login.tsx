@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, message, Card, Typography } from 'antd';
+import { Form, Input, Button, Card, Typography, App } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuth } from '../../auth/AuthContext';
 import type { LoginCredentials } from '../../auth/types';
@@ -11,23 +11,44 @@ const { Title, Text } = Typography;
 const Login: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const { message } = App.useApp();
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const onFinish = async (values: LoginCredentials) => {
     setLoading(true);
     try {
-      await login(values);
-      message.success('Login successful!');
-      navigate('/', { replace: true });
+      const response = await login(values);
+      console.log(response,'response--')
+      if (response.requiresOTP) {
+        // Redirect to OTP page with credentials
+        message.success(response.message || 'OTP sent to your email!');
+        navigate('/otp', { 
+          state: { 
+            email: values.email, 
+            password: values.password 
+          },
+          replace: true 
+        });
+      } else {
+        // Direct login success
+        message.success('Login successful!');
+        navigate('/', { replace: true });
+      }
     } catch (error: unknown) {
+      // Handle API errors with proper error message
       let errorMessage = 'Login failed. Please try again.';
       
-      if (error instanceof Error) {
-        errorMessage = error.message;
+      if (error && typeof error === 'object') {
+        if ('message' in error && typeof error.message === 'string') {
+          errorMessage = error.message;
+        }
       }
       
-      message.error(errorMessage);
+      message.error({
+        content: errorMessage,
+        duration: 5,
+      });
     } finally {
       setLoading(false);
     }
@@ -105,8 +126,15 @@ const Login: React.FC = () => {
               Demo Credentials:
             </Text>
             <div className="demo-credentials">
-              <Text code>Admin: admin@dalmia.com / password</Text>
-              <Text code>User: user@dalmia.com / password</Text>
+              <Text code>✅ Success: admin@dalmia.com / password</Text>
+              <Text code>✅ Success: user@dalmia.com / password</Text>
+              <Text code>❌ DM1004: blocked@dalmia.com / password</Text>
+              <Text code>❌ DM1006: inactive@dalmia.com / password</Text>
+            </div>
+            <div style={{ marginTop: '8px', fontSize: '12px' }}>
+              <Text type="secondary">
+                Test error responses with blocked/inactive accounts to see resp_msg toasts
+              </Text>
             </div>
           </div>
         </Card>
