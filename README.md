@@ -390,3 +390,7 @@ npx vite preview --outDir dist-staging # Preview dist-staging/
 - **Location permissions** are required for visit functionality
 - **Camera access** is needed for visit verification photos
 - The project supports both **real API integration** and **mock data** for development
+
+## Add the following for experiment
+
+-- /_ eslint-disable @typescript-eslint/no-explicit-any _/
