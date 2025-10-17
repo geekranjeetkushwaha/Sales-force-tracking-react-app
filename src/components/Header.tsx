@@ -30,7 +30,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-4 flex items-center justify-between">
-      <div className="flex items-center">
+      <div className="flex items-center gap-4">
         {/* Hamburger for mobile */}
         <Button
           type="text"
@@ -38,7 +38,7 @@ const Header: React.FC = () => {
           onClick={showDrawer}
           className="md:hidden mr-2"
         />
-        <h3 className="text-[20px] font-semibold">My PJP</h3>
+        <h3 className="text-[20px] mb-[0px]">My PJP</h3>
       </div>
       <div className="flex items-center gap-4">
         <div className="text-gray-500 bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-medium">
@@ -46,6 +46,12 @@ const Header: React.FC = () => {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
+          })}{' '}
+          |{' '}
+          {new Date().toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
           })}
         </div>
 
@@ -53,11 +59,11 @@ const Header: React.FC = () => {
         <Dropdown
           menu={{
             items: [
-              {
-                key: 'profile',
-                icon: <UserOutlined />,
-                label: user?.name || 'User',
-              },
+              // {
+              //     key: 'profile',
+              //     icon: <UserOutlined />,
+              //     label: user?.name || 'User',
+              // },
               {
                 key: 'logout',
                 icon: <LogoutOutlined />,
@@ -78,33 +84,69 @@ const Header: React.FC = () => {
       </div>
       {/* Antd Drawer for mobile nav */}
       <Drawer
-        title="Menu"
+        title={
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+              <UserOutlined className="text-white text-lg" />
+            </div>
+            <div>
+              <div className="text-gray-800 font-semibold">{user?.name || 'User'}</div>
+              <div className="text-gray-500 text-sm">Sales Representative</div>
+            </div>
+          </div>
+        }
         placement="left"
         onClose={onClose}
         open={visible}
         bodyStyle={{ padding: 0 }}
+        headerStyle={{
+          borderBottom: '1px solid #f0f0f0',
+          padding: '20px 24px',
+        }}
+        width={300}
       >
-        <nav className="flex flex-col p-4 gap-4">
-          <Link
-            to="/"
-            onClick={onClose}
-            style={{ textDecoration: 'none', color: '#2563eb', fontWeight: 500 }}
-          >
-            Home
-          </Link>
-          {/* <Link to="/visit" onClick={onClose} style={{ textDecoration: 'none', color: '#2563eb', fontWeight: 500 }}>Visit</Link>
-                    <Link to="/pjp" onClick={onClose} style={{ textDecoration: 'none', color: '#2563eb', fontWeight: 500 }}>PJP</Link> */}
-          <div className="border-t pt-4 mt-4">
+        <div className="h-full bg-gray-50">
+          {/* Navigation Menu */}
+          <nav className="p-6">
+            <div className="space-y-3">
+              <Link
+                to="/"
+                onClick={onClose}
+                className="flex items-center gap-4 p-4 rounded-xl bg-white shadow-sm hover:shadow-md hover:bg-blue-50 transition-all duration-200 group no-underline"
+              >
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                  <span className="text-blue-600 text-lg">🏠</span>
+                </div>
+                <div>
+                  <div className="text-gray-800 font-medium">PJP</div>
+                  <div className="text-gray-500 text-sm">Vist, Listing & Overview</div>
+                </div>
+              </Link>
+
+              <div className="flex items-center gap-4 p-4 rounded-xl bg-white shadow-sm opacity-50">
+                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <span className="text-gray-400 text-lg">📋</span>
+                </div>
+                <div>
+                  <div className="text-gray-500 font-medium">Reports</div>
+                  <div className="text-gray-400 text-sm">Coming Soon</div>
+                </div>
+              </div>
+            </div>
+          </nav>
+
+          {/* Logout Button */}
+          <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-gray-200">
             <Button
               type="text"
               icon={<LogoutOutlined />}
               onClick={handleLogout}
-              className="w-full text-left flex items-center gap-2 text-red-500 hover:bg-red-50"
+              className="w-full h-12 flex items-center justify-center gap-3 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl border border-red-200 hover:border-red-300 font-medium transition-all duration-200"
             >
               Logout
             </Button>
           </div>
-        </nav>
+        </div>
       </Drawer>
     </header>
   );

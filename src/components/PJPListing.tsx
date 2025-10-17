@@ -230,7 +230,7 @@ export default function PJPApp() {
                     setActiveTab('counter');
                     setShowCounterPopup(true);
                   }}
-                  className="w-full py-3 px-4 rounded-lg cursor-pointer bg-orange-500 text-white text-sm font-semibold hover:bg-orange-600 transition-colors duration-200 flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 md:rounded-lg cursor-pointer bg-orange-500 text-white text-sm font-semibold hover:bg-orange-600 transition-colors duration-200 flex items-center justify-center gap-2"
                 >
                   <Search size={16} />
                   SELECT COUNTER
@@ -256,7 +256,7 @@ export default function PJPApp() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col px-4 py-6">
+      <div className="flex-1 flex flex-col px-4 py-6 pb-[100px]">
         {PJPSummaryData.length ? (
           <>
             {/* Search Input */}
