@@ -16,6 +16,7 @@ export interface PJPItem {
   counterName: string;
   visitDate: string;
   remarks: string;
+  visitTime?: string;
 }
 
 export interface PJPDetails {

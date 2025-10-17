@@ -1,6 +1,5 @@
-
 import type { SelectPopupProps } from './types';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 function SelectPopup<T>({
   show,
@@ -14,25 +13,41 @@ function SelectPopup<T>({
 }: SelectPopupProps<T>) {
   if (!show) return null;
 
-  const filteredData = data.filter(
-    (item) => displayField(item).toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = data.filter(item =>
+    displayField(item).toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleSelect = (item: T) => {
     onClose(item);
   };
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose(null);
+    }
+  };
+
+  const handlePopupClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className="fixed inset-0 bg-opacity-50 z-50 flex items-end sm:items-center sm:justify-center">
-      <div className="bg-white w-full sm:rounded-lg h-full sm:h-auto sm:max-h-[100vh] flex flex-col animate-slide-up min-h-screen">
+    <div
+      className="fixed inset-0 bg-[rgba(0,0,0,0.5)] bg-opacity-50 z-50 flex items-end md:items-stretch md:justify-end"
+      onClick={handleBackdropClick}
+    >
+      <div
+        className="bg-white w-full md:!w-[40%] h-full md:max-h-full flex flex-col animate-slide-up md:animate-slide-right min-h-screen md:min-h-full md:rounded-l-lg"
+        onClick={handlePopupClick}
+      >
         {/* Popup Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
           <button
             onClick={() => onClose(null)}
-            className="text-orange-500 hover:text-orange-600"
+            className="text-orange-500 hover:text-orange-600 p-1 rounded-full hover:bg-orange-50 transition-colors"
           >
-            X
+            <X size={20} className="cursor-pointer" />
           </button>
         </div>
 
@@ -47,7 +62,7 @@ function SelectPopup<T>({
               type="text"
               placeholder={`Search ${title}`}
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
@@ -63,16 +78,12 @@ function SelectPopup<T>({
                   onClick={() => handleSelect(item)}
                   className="p-3 hover:bg-gray-50 cursor-pointer rounded-lg transition-colors border-b border-gray-100 last:border-b-0"
                 >
-                  <p className="text-gray-700 text-sm">
-                    {displayField(item)}
-                  </p>
+                  <p className="text-gray-700 text-sm">{displayField(item)}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-500">
-              No items found
-            </div>
+            <div className="text-center py-8 text-gray-500">No items found</div>
           )}
         </div>
       </div>
@@ -85,8 +96,28 @@ function SelectPopup<T>({
             transform: translateY(0);
           }
         }
+        
+        @keyframes slide-right {
+          from {
+            transform: translateX(100%);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        
         .animate-slide-up {
           animation: slide-up 0.3s ease-out;
+        }
+        
+        .animate-slide-right {
+          animation: slide-right 0.3s ease-out;
+        }
+        
+        @media (min-width: 768px) {
+          .animate-slide-up {
+            animation: slide-right 0.3s ease-out;
+          }
         }
       `}</style>
     </div>
