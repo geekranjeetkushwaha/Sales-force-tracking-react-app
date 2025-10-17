@@ -5,7 +5,68 @@ A modern React TypeScript application for sales force management and tracking, b
 ## Features
 
 - 🔐 **Secure Authentication** with OTP verification
-- 📱 **Responsive Design** optimized for mobile and desktop
+- 📱 **Responsive Design** optimized for mobil### Preview Built Applications
+
+```bash
+# Preview specific builds
+npx vite preview                    # Preview dist/
+npx vite preview --outDir dist-prod # Preview dist-prod/
+npx vite preview --outDir dist-staging # Preview dist-staging/
+```
+
+## Git Hooks & Code Quality
+
+This project includes automated pre-commit hooks to ensure code quality:
+
+### Pre-commit Hooks Setup
+
+The project uses **Husky** and **lint-staged** to automatically run quality checks before commits:
+
+- ✅ **ESLint**: Checks and auto-fixes code issues
+- ✅ **Prettier**: Formats code consistently
+- ✅ **Type checking**: Ensures TypeScript correctness
+- ✅ **Commit message validation**: Basic commit message checks
+
+### What happens on commit:
+
+1. **Lint staged files**: Only files being committed are checked
+2. **Auto-fix issues**: ESLint and Prettier auto-fix what they can
+3. **Block bad commits**: Commit fails if critical errors remain
+4. **Fast feedback**: Only staged files are processed for speed
+
+### Manual Quality Checks
+
+```bash
+# Run all quality checks manually
+npm run lint:fix-all                # Auto-fix common issues
+npm run lint:check                  # Check for remaining problems
+npm run format:check                # Verify code formatting
+npm run pre-commit                  # Manually run pre-commit checks
+
+# Step-by-step quality workflow
+npm run lint:fix                    # Fix linting issues
+npm run format                      # Format all files
+npm run lint:check                  # Final validation
+```
+
+### Bypassing Hooks (Emergency Only)
+
+```bash
+# Skip pre-commit hooks (NOT recommended)
+git commit --no-verify -m "emergency fix"
+
+# Better approach: Fix issues first
+npm run lint:fix-all
+git add .
+git commit -m "fix: resolve linting issues"
+```
+
+### Quality Standards
+
+- **Zero errors**: No ESLint errors allowed in commits
+- **Max 5 warnings**: Some warnings allowed for gradual improvement
+- **Consistent formatting**: All code auto-formatted with Prettier
+- **TypeScript compliance**: Strict type checking enabledesktop
 - 📍 **Location Tracking** with GPS integration
 - 📸 **Camera Integration** for visit verification
 - 🗺️ **Interactive PJP Management** with detailed counter information
@@ -54,6 +115,7 @@ corepack enable
 ```
 
 **Why use Corepack?**
+
 - **Package Manager Management**: Corepack is Node.js's built-in package manager manager that ensures everyone uses the same package manager version
 - **Zero Configuration**: Automatically detects and uses the correct package manager (yarn/pnpm/npm) specified in `package.json`
 - **Version Consistency**: Prevents issues caused by different package manager versions across team members
@@ -62,11 +124,13 @@ corepack enable
 ### 5. Install Dependencies
 
 Using Yarn (recommended):
+
 ```bash
 yarn
 ```
 
 Or using npm:
+
 ```bash
 npm install
 ```
@@ -74,11 +138,13 @@ npm install
 ### 6. Start Development Server
 
 Using Yarn:
+
 ```bash
 yarn dev
 ```
 
 Or using npm:
+
 ```bash
 npm run dev
 ```
@@ -97,7 +163,7 @@ npm run setup:env
 
 # Or specify environment
 npm run setup:env:dev      # Development environment
-npm run setup:env:staging  # Staging environment  
+npm run setup:env:staging  # Staging environment
 npm run setup:env:prod     # Production environment
 
 # Force overwrite existing .env
@@ -119,7 +185,7 @@ Add the following content to `.env`:
 # API Configuration
 VITE_API_URL=https://mobilityqacloud.dalmiabharat.com
 
-# App Configuration  
+# App Configuration
 VITE_APP_NAME=TSO
 VITE_APP_VERSION=1.0.0
 VITE_BUILD_VERSION=1
@@ -174,18 +240,21 @@ src/
 In the project directory, you can run:
 
 ### Development Scripts
+
 - **`npm run dev`** - Starts the development server with hot reload at [http://localhost:5173](http://localhost:5173)
 - **`npm run build`** - Builds the app using current environment configuration to the `dist` folder
 - **`npm run lint`** - Runs ESLint to check for code quality issues
 - **`npm run preview`** - Serves the built app for local preview
 
 ### Environment-Specific Build Scripts
+
 - **`npm run build:dev`** - Build with development configuration
-- **`npm run build:staging`** - Build with staging configuration  
+- **`npm run build:staging`** - Build with staging configuration
 - **`npm run build:prod`** - Build with production configuration
 - **`npm run build:advanced <env>`** - Advanced build with custom output directories
 
 ### Environment Setup Scripts
+
 - **`npm run setup`** - Complete setup: install dependencies + create .env file
 - **`npm run setup:env`** - Create .env file for development environment
 - **`npm run setup:env:dev`** - Create .env file for development
@@ -193,7 +262,18 @@ In the project directory, you can run:
 - **`npm run setup:env:prod`** - Create .env file for production environment
 - **`npm run validate:env`** - Validate environment configuration
 
+### Code Quality Scripts
+
+- **`npm run lint`** - Run ESLint to check for code issues
+- **`npm run lint:fix`** - Run ESLint and auto-fix issues
+- **`npm run lint:check`** - Run ESLint with zero warnings tolerance
+- **`npm run lint:fix-all`** - Auto-fix common linting and formatting issues
+- **`npm run format`** - Format code with Prettier
+- **`npm run format:check`** - Check if code is properly formatted
+- **`npm run pre-commit`** - Manually run pre-commit checks
+
 ### Quick Start
+
 ```bash
 # Complete project setup in one command
 npm run setup
@@ -209,19 +289,22 @@ npm run dev
 This project includes powerful automation for environment management:
 
 ### Features
+
 - **Multi-environment support**: Development, staging, and production configurations
 - **Automatic validation**: Ensures all required variables are present before starting the app
 - **Force overwrite**: Option to recreate existing .env files
 - **Smart defaults**: Sensible defaults for each environment type
 
 ### Environment Types
-| Environment | API URL | Mock API | Dev Mode | Use Case |
-|-------------|---------|----------|----------|----------|
-| `development` | `mobilityqacloud.dalmiabharat.com` | ✅ | ✅ | Local development with mock data |
-| `staging` | `staging-api.dalmiabharat.com` | ❌ | ❌ | Pre-production testing |
-| `production` | `api.dalmiabharat.com` | ❌ | ❌ | Live production environment |
+
+| Environment   | API URL                            | Mock API | Dev Mode | Use Case                         |
+| ------------- | ---------------------------------- | -------- | -------- | -------------------------------- |
+| `development` | `mobilityqacloud.dalmiabharat.com` | ✅       | ✅       | Local development with mock data |
+| `staging`     | `staging-api.dalmiabharat.com`     | ❌       | ❌       | Pre-production testing           |
+| `production`  | `api.dalmiabharat.com`             | ❌       | ❌       | Live production environment      |
 
 ### Advanced Usage
+
 ```bash
 # View detailed help
 npm run setup:env -- --help
@@ -239,7 +322,9 @@ npm run validate:env                 # Comprehensive environment check
 ```
 
 ### Validation Features
+
 The validation script checks:
+
 - ✅ All required variables are present
 - ⚠️ Warns about missing optional variables
 - 📊 Provides summary report
@@ -251,14 +336,16 @@ The validation script checks:
 Build your application for different environments with these methods:
 
 ### **Method 1: Simple Environment Builds**
+
 ```bash
 # Quick environment builds (uses default dist/ folder)
 npm run build:dev        # Development build
-npm run build:staging    # Staging build  
+npm run build:staging    # Staging build
 npm run build:prod       # Production build
 ```
 
 ### **Method 2: Advanced Builds with Custom Output**
+
 ```bash
 # Advanced builds with separate output directories
 npm run build:advanced development   # → dist-dev/
@@ -270,6 +357,7 @@ npm run build:advanced production --out=release
 ```
 
 ### **Method 3: Manual Switch + Build**
+
 ```bash
 # Switch environment then build
 npm run setup:env:prod -- --force   # Switch to production
@@ -281,13 +369,14 @@ npm run build                       # Build with staging config
 
 ### **Build Output Comparison**
 
-| Method | Command | Environment | Output Directory | Use Case |
-|--------|---------|-------------|------------------|----------|
-| Simple | `npm run build:prod` | Production | `dist/` | Single environment deployment |
-| Advanced | `npm run build:advanced production` | Production | `dist-prod/` | Multi-environment comparison |
-| Manual | `npm run setup:env:prod && npm run build` | Production | `dist/` | Manual control |
+| Method   | Command                                   | Environment | Output Directory | Use Case                      |
+| -------- | ----------------------------------------- | ----------- | ---------------- | ----------------------------- |
+| Simple   | `npm run build:prod`                      | Production  | `dist/`          | Single environment deployment |
+| Advanced | `npm run build:advanced production`       | Production  | `dist-prod/`     | Multi-environment comparison  |
+| Manual   | `npm run setup:env:prod && npm run build` | Production  | `dist/`          | Manual control                |
 
 ### **Preview Built Applications**
+
 ```bash
 # Preview specific builds
 npx vite preview                    # Preview dist/

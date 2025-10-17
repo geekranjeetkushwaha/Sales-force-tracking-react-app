@@ -1,5 +1,5 @@
 import './App.css';
-import { useAuth } from './auth/AuthContext';
+import { useAuth } from './auth/useAuth';
 import Header from './components/Header';
 import AppRoutes from './routes/AppRoutes';
 
@@ -8,7 +8,7 @@ function App() {
 
   return (
     <>
-      <div className='app-container'>
+      <div className="app-container">
         {isAuthenticated && <Header />}
         <main className="flex-1">
           <AppRoutes />

@@ -15,41 +15,36 @@ export interface ToastOptions {
 // Hook for using toast service within App context
 export const useToast = () => {
   const { message } = App.useApp();
-  
+
   return {
-    success: (content: string, options?: ToastOptions) => {
+    success: (content: string) => {
       message.success({
         content,
         duration: 3,
-        ...options,
       });
     },
-    error: (content: string, options?: ToastOptions) => {
+    error: (content: string) => {
       message.error({
         content,
         duration: 5, // Show errors longer
-        ...options,
       });
     },
-    warning: (content: string, options?: ToastOptions) => {
+    warning: (content: string) => {
       message.warning({
         content,
         duration: 4,
-        ...options,
       });
     },
-    info: (content: string, options?: ToastOptions) => {
+    info: (content: string) => {
       message.info({
         content,
         duration: 3,
-        ...options,
       });
     },
-    loading: (content: string, options?: ToastOptions) => {
+    loading: (content: string) => {
       return message.loading({
         content,
         duration: 0, // Don't auto hide loading messages
-        ...options,
       });
     },
   };
@@ -58,33 +53,33 @@ export const useToast = () => {
 // Legacy class-based service for backward compatibility
 class ToastService {
   // Success message
-  success(content: string, options?: ToastOptions): void {
+  success(content: string): void {
     console.warn('Using legacy toast service. Consider using useToast hook instead.');
     // Fallback to console in case App context is not available
     console.log('Success:', content);
   }
 
   // Error message
-  error(content: string, options?: ToastOptions): void {
+  error(content: string): void {
     console.warn('Using legacy toast service. Consider using useToast hook instead.');
     // Fallback to console in case App context is not available
     console.error('Error:', content);
   }
 
   // Warning message
-  warning(content: string, options?: ToastOptions): void {
+  warning(content: string): void {
     console.warn('Using legacy toast service. Consider using useToast hook instead.');
     console.warn('Warning:', content);
   }
 
   // Info message
-  info(content: string, options?: ToastOptions): void {
+  info(content: string): void {
     console.warn('Using legacy toast service. Consider using useToast hook instead.');
     console.info('Info:', content);
   }
 
   // Loading message
-  loading(content: string, options?: ToastOptions): () => void {
+  loading(content: string): () => void {
     console.warn('Using legacy toast service. Consider using useToast hook instead.');
     console.log('Loading:', content);
     return () => {};
@@ -100,10 +95,11 @@ class ToastService {
     console.log('Destroy message by key:', key);
   }
 
-    // Handle Dalmia API errors specifically - Always use resp_msg if available
+  // Handle Dalmia API errors specifically - Always use resp_msg if available
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handleDalmiaError(error: any): void {
     let errorMessage = 'An error occurred. Please try again.';
-    
+
     // Always prioritize the actual error message from API (resp_msg)
     if (error.message) {
       errorMessage = error.message; // This contains the resp_msg from Dalmia API
@@ -133,7 +129,7 @@ class ToastService {
     console.log('Showing Dalmia API error toast:', {
       dalmiaCode: error.dalmiaCode,
       message: errorMessage,
-      originalError: error
+      originalError: error,
     });
 
     this.error(errorMessage, { duration: 6 }); // Show error for longer duration
@@ -149,11 +145,12 @@ class ToastService {
 export const toast = new ToastService();
 
 // Export individual methods for convenience
-export const showSuccess = (content: string, options?: ToastOptions) => toast.success(content, options);
-export const showError = (content: string, options?: ToastOptions) => toast.error(content, options);
-export const showWarning = (content: string, options?: ToastOptions) => toast.warning(content, options);
-export const showInfo = (content: string, options?: ToastOptions) => toast.info(content, options);
-export const showLoading = (content: string, options?: ToastOptions) => toast.loading(content, options);
+export const showSuccess = (content: string) => toast.success(content);
+export const showError = (content: string) => toast.error(content);
+export const showWarning = (content: string) => toast.warning(content);
+export const showInfo = (content: string) => toast.info(content);
+export const showLoading = (content: string) => toast.loading(content);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const handleApiError = (error: any) => toast.handleDalmiaError(error);
 export const handleApiSuccess = (message: string) => toast.handleDalmiaSuccess(message);
 

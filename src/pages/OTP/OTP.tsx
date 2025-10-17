@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Form, Input, Button, Card, Typography, Space, App } from 'antd';
 import { SafetyOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import { useAuth } from '../../auth/AuthContext';
+import { useAuth } from '../../auth/useAuth';
 import './OTP.css';
 
 const { Title, Text } = Typography;
@@ -37,7 +37,7 @@ const OTP: React.FC = () => {
 
     // Start countdown for resend button
     const timer = setInterval(() => {
-      setCountdown((prev) => {
+      setCountdown(prev => {
         if (prev <= 1) {
           setCanResend(true);
           clearInterval(timer);
@@ -62,20 +62,20 @@ const OTP: React.FC = () => {
       await verifyOTP({
         email: state.email,
         password: state.password,
-        otp: values.otp
+        otp: values.otp,
       });
       message.success('OTP verified successfully!');
       navigate('/', { replace: true });
     } catch (error: unknown) {
       // Handle API errors with proper error message
       let errorMessage = 'OTP verification failed. Please try again.';
-      
+
       if (error && typeof error === 'object') {
         if ('message' in error && typeof error.message === 'string') {
           errorMessage = error.message;
         }
       }
-      
+
       message.error({
         content: errorMessage,
         duration: 5,
@@ -97,10 +97,10 @@ const OTP: React.FC = () => {
       message.success('OTP resent successfully!');
       setCountdown(30);
       setCanResend(false);
-      
+
       // Restart countdown
       const timer = setInterval(() => {
-        setCountdown((prev) => {
+        setCountdown(prev => {
           if (prev <= 1) {
             setCanResend(true);
             clearInterval(timer);
@@ -112,13 +112,13 @@ const OTP: React.FC = () => {
     } catch (error: unknown) {
       // Handle API errors with proper error message
       let errorMessage = 'Failed to resend OTP. Please try again.';
-      
+
       if (error && typeof error === 'object') {
         if ('message' in error && typeof error.message === 'string') {
           errorMessage = error.message;
         }
       }
-      
+
       message.error({
         content: errorMessage,
         duration: 5,
@@ -130,9 +130,7 @@ const OTP: React.FC = () => {
     navigate('/login');
   };
 
-  const maskedEmail = state?.email 
-    ? state.email.replace(/(.{2})(.*)(@.*)/, '$1***$3')
-    : '';
+  const maskedEmail = state?.email ? state.email.replace(/(.{2})(.*)(@.*)/, '$1***$3') : '';
 
   return (
     <div className="otp-container">
@@ -147,20 +145,18 @@ const OTP: React.FC = () => {
             >
               Back to Login
             </Button>
-            
+
             <div className="logo-container">
               <div className="logo-icon">
                 <SafetyOutlined style={{ fontSize: '48px', color: '#1890ff' }} />
               </div>
             </div>
-            
+
             <Title level={2} className="otp-title">
               Verify OTP
             </Title>
-            
-            <Text className="otp-subtitle">
-              We've sent a 6-digit verification code to
-            </Text>
+
+            <Text className="otp-subtitle">We've sent a 6-digit verification code to</Text>
             <Text strong className="otp-email">
               {maskedEmail}
             </Text>
@@ -180,19 +176,19 @@ const OTP: React.FC = () => {
               rules={[
                 { required: true, message: 'Please enter the OTP!' },
                 { len: 6, message: 'OTP must be 6 digits!' },
-                { pattern: /^\d{6}$/, message: 'OTP must contain only numbers!' }
+                { pattern: /^\d{6}$/, message: 'OTP must contain only numbers!' },
               ]}
             >
               <Input
                 placeholder="Enter 6-digit OTP"
                 className="otp-input"
                 maxLength={6}
-                style={{ 
-                  fontSize: '18px', 
-                  letterSpacing: '4px', 
-                  textAlign: 'center' as const 
+                style={{
+                  fontSize: '18px',
+                  letterSpacing: '4px',
+                  textAlign: 'center' as const,
                 }}
-                onChange={(e) => {
+                onChange={e => {
                   // Only allow numbers
                   const value = e.target.value.replace(/\D/g, '');
                   form.setFieldValue('otp', value);
@@ -215,22 +211,14 @@ const OTP: React.FC = () => {
 
           <div className="otp-actions">
             <Space direction="vertical" className="resend-section">
-              <Text type="secondary">
-                Didn't receive the code?
-              </Text>
-              
+              <Text type="secondary">Didn't receive the code?</Text>
+
               {canResend ? (
-                <Button 
-                  type="link" 
-                  onClick={handleResendOTP}
-                  className="resend-button"
-                >
+                <Button type="link" onClick={handleResendOTP} className="resend-button">
                   Resend OTP
                 </Button>
               ) : (
-                <Text type="secondary">
-                  Resend available in {countdown}s
-                </Text>
+                <Text type="secondary">Resend available in {countdown}s</Text>
               )}
             </Space>
           </div>

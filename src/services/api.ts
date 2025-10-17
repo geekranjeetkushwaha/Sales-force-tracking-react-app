@@ -1,7 +1,18 @@
 import axios, { type AxiosResponse } from 'axios';
-import type { LoginCredentials, User, OTPVerificationData, DalmiaLoginPayload } from '../auth/types';
+import type {
+  LoginCredentials,
+  User,
+  OTPVerificationData,
+  DalmiaLoginPayload,
+} from '../auth/types';
 import { API_CONFIG, AUTH_ENDPOINTS } from './endpoints';
-import { generateDeviceId, getDeviceType, APP_CONFIG, simpleEncrypt, generateReferenceId } from '../utils/deviceUtils';
+import {
+  generateDeviceId,
+  getDeviceType,
+  APP_CONFIG,
+  simpleEncrypt,
+  generateReferenceId,
+} from '../utils/deviceUtils';
 
 // Create axios instance with base configuration
 const api = axios.create({
@@ -12,13 +23,13 @@ const api = axios.create({
 
 // Request interceptor to add auth token and device information
 api.interceptors.request.use(
-  (config) => {
+  config => {
     const token = localStorage.getItem('authToken');
     if (token) {
       config.headers['access-token'] = token;
       config.headers['x-access-token'] = token;
     }
-    
+
     // Add device information to all requests
     const deviceId = generateDeviceId();
     config.headers['deviceid'] = deviceId;
@@ -26,18 +37,18 @@ api.interceptors.request.use(
     config.headers['brand'] = 'Web Browser';
     config.headers['buildversion'] = APP_CONFIG.BUILD_VERSION;
     config.headers['appversion'] = APP_CONFIG.APP_VERSION;
-    
+
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
 
 // Response interceptor to handle auth errors
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
+  response => response,
+  error => {
     if (error.response?.status === 401) {
       // Clear auth data on unauthorized
       localStorage.removeItem('authToken');
@@ -61,9 +72,10 @@ export interface ApiError {
 }
 
 // Dalmia API Response Structure
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface DalmiaApiResponse<T = any> {
-  resp_code: string;  // Only 'DM1002' indicates success
-  resp_msg: string;   // Human readable message
+  resp_code: string; // Only 'DM1002' indicates success
+  resp_msg: string; // Human readable message
   resp_body: T | null; // Data payload (null for errors)
 }
 
@@ -95,7 +107,7 @@ export const authApi = {
       // Prepare Dalmia API payload
       const deviceId = generateDeviceId();
       const referenceId = generateReferenceId();
-      
+
       // Create the payload structure as per Dalmia API
       const payload: DalmiaLoginPayload = {
         appName: APP_CONFIG.APP_NAME,
@@ -110,18 +122,22 @@ export const authApi = {
       const config = {
         headers: {
           'mobile-number': '',
-          'usertype': 'null',
+          usertype: 'null',
           'x-referenceid': '',
-          'locationaccuracytype': '',
+          locationaccuracytype: '',
           'reference-id': '',
-          'referenceid': '',
-        }
+          referenceid: '',
+        },
       };
 
-      const response: AxiosResponse<DalmiaApiResponse> = await api.post(AUTH_ENDPOINTS.LOGIN_OTP, payload, config);
-      
+      const response: AxiosResponse<DalmiaApiResponse> = await api.post(
+        AUTH_ENDPOINTS.LOGIN_OTP,
+        payload,
+        config
+      );
+
       console.log('Dalmia Login API Response:', response.data);
-      
+
       // Parse Dalmia API response structure - ONLY DM1002 is success
       if (response.data) {
         if (response.data.resp_code === 'DM1002') {
@@ -141,25 +157,41 @@ export const authApi = {
       } else {
         throw new Error('Invalid response from server');
       }
-    } catch (error: any) {
+    } catch (error) {
       // For development/demo purposes, simulate API response
-      if (import.meta.env.DEV || error.code === 'ERR_NETWORK') {
+      const isNetworkError =
+        error && typeof error === 'object' && 'code' in error && error.code === 'ERR_NETWORK';
+      if (import.meta.env.DEV || isNetworkError) {
         console.log('Using mock API for development');
         return mockLogin(credentials);
       }
-      
+
       // Handle Dalmia API errors - if resp_code is not DM1002, show resp_msg as error
-      if (error.response?.data?.resp_code) {
+      const hasApiError =
+        error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response &&
+        typeof error.response === 'object' &&
+        'data' in error.response &&
+        error.response.data &&
+        typeof error.response.data === 'object' &&
+        'resp_code' in error.response.data;
+      if (hasApiError) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const apiErr = error as any;
         throw {
-          message: error.response.data.resp_msg || 'Login failed',
-          status: error.response.status || 400,
-          dalmiaCode: error.response.data.resp_code,
+          message: apiErr.response.data.resp_msg || 'Login failed',
+          status: apiErr.response.status || 400,
+          dalmiaCode: apiErr.response.data.resp_code,
         } as ApiError & { dalmiaCode: string };
       }
-      
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const err = error as any;
       throw {
-        message: error.message || 'Login failed',
-        status: error.response?.status || 500,
+        message: err?.message || 'Login failed',
+        status: err?.response?.status || 500,
       } as ApiError;
     }
   },
@@ -170,7 +202,7 @@ export const authApi = {
       // Prepare Dalmia OTP verification payload
       const deviceId = generateDeviceId();
       const referenceId = generateReferenceId();
-      
+
       const payload = {
         appName: APP_CONFIG.APP_NAME,
         appVersion: APP_CONFIG.APP_VERSION,
@@ -181,10 +213,13 @@ export const authApi = {
         otp: data.otp,
       };
 
-      const response: AxiosResponse<DalmiaApiResponse> = await api.post(AUTH_ENDPOINTS.VERIFY_OTP, payload);
-      
+      const response: AxiosResponse<DalmiaApiResponse> = await api.post(
+        AUTH_ENDPOINTS.VERIFY_OTP,
+        payload
+      );
+
       console.log('Dalmia OTP Verify API Response:', response.data);
-      
+
       // Parse Dalmia API response structure - ONLY DM1002 is success
       if (response.data) {
         if (response.data.resp_code === 'DM1002' && response.data.resp_body) {
@@ -211,25 +246,27 @@ export const authApi = {
       } else {
         throw new Error('Invalid response from server');
       }
-    } catch (error: any) {
+    } catch (error) {
       // For development/demo purposes, simulate API response
-      if (import.meta.env.DEV || error.code === 'ERR_NETWORK') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
+      if (import.meta.env.DEV || apiError?.code === 'ERR_NETWORK') {
         console.log('Using mock OTP verification for development');
         return mockVerifyOTP(data);
       }
-      
+
       // Handle Dalmia API errors
-      if (error.response?.data?.resp_code) {
+      if (apiError?.response?.data?.resp_code) {
         throw {
-          message: error.response.data.resp_msg || 'OTP verification failed',
-          status: error.response.status || 400,
-          dalmiaCode: error.response.data.resp_code,
+          message: apiError.response.data.resp_msg || 'OTP verification failed',
+          status: apiError.response.status || 400,
+          dalmiaCode: apiError.response.data.resp_code,
         } as ApiError & { dalmiaCode: string };
       }
-      
+
       throw {
-        message: error.message || 'OTP verification failed',
-        status: error.response?.status || 400,
+        message: apiError?.message || 'OTP verification failed',
+        status: apiError?.response?.status || 400,
       } as ApiError;
     }
   },
@@ -240,7 +277,7 @@ export const authApi = {
       // Use the same login endpoint to resend OTP
       const deviceId = generateDeviceId();
       const referenceId = generateReferenceId();
-      
+
       const payload: DalmiaLoginPayload = {
         appName: APP_CONFIG.APP_NAME,
         appVersion: APP_CONFIG.APP_VERSION,
@@ -250,10 +287,13 @@ export const authApi = {
         referenceId: simpleEncrypt(referenceId),
       };
 
-      const response: AxiosResponse<DalmiaApiResponse> = await api.post(AUTH_ENDPOINTS.LOGIN_OTP, payload);
-      
+      const response: AxiosResponse<DalmiaApiResponse> = await api.post(
+        AUTH_ENDPOINTS.LOGIN_OTP,
+        payload
+      );
+
       console.log('Dalmia Resend OTP API Response:', response.data);
-      
+
       // Check Dalmia response - ONLY DM1002 is success
       if (response.data && response.data.resp_code !== 'DM1002') {
         throw {
@@ -262,25 +302,27 @@ export const authApi = {
           dalmiaCode: response.data.resp_code,
         } as ApiError & { dalmiaCode: string };
       }
-    } catch (error: any) {
+    } catch (error) {
       // For development/demo purposes, simulate API response
-      if (import.meta.env.DEV || error.code === 'ERR_NETWORK') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
+      if (import.meta.env.DEV || apiError?.code === 'ERR_NETWORK') {
         console.log('Using mock resend OTP for development');
         return mockResendOTP(email);
       }
-      
+
       // Handle Dalmia API errors
-      if (error.response?.data?.resp_code) {
+      if (apiError?.response?.data?.resp_code) {
         throw {
-          message: error.response.data.resp_msg || 'Failed to resend OTP',
-          status: error.response.status || 400,
-          dalmiaCode: error.response.data.resp_code,
+          message: apiError.response.data.resp_msg || 'Failed to resend OTP',
+          status: apiError.response.status || 400,
+          dalmiaCode: apiError.response.data.resp_code,
         } as ApiError & { dalmiaCode: string };
       }
-      
+
       throw {
-        message: error.message || 'Failed to resend OTP',
-        status: error.response?.status || 400,
+        message: apiError?.message || 'Failed to resend OTP',
+        status: apiError?.response?.status || 400,
       } as ApiError;
     }
   },
@@ -289,7 +331,7 @@ export const authApi = {
   logout: async (): Promise<void> => {
     try {
       await api.post(AUTH_ENDPOINTS.LOGOUT);
-    } catch (error) {
+    } catch {
       // Even if logout fails on server, we still clear local data
       console.warn('Logout API call failed, but clearing local data');
     }
@@ -300,10 +342,12 @@ export const authApi = {
     try {
       const response: AxiosResponse<{ user: User }> = await api.get(AUTH_ENDPOINTS.VERIFY_TOKEN);
       return response.data.user;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Token verification failed',
-        status: error.response?.status || 401,
+        message: apiError?.response?.data?.message || 'Token verification failed',
+        status: apiError?.response?.status || 401,
       } as ApiError;
     }
   },
@@ -313,10 +357,12 @@ export const authApi = {
     try {
       const response: AxiosResponse<LoginResponse> = await api.post(AUTH_ENDPOINTS.REFRESH_TOKEN);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Token refresh failed',
-        status: error.response?.status || 401,
+        message: apiError?.response?.data?.message || 'Token refresh failed',
+        status: apiError?.response?.status || 401,
       } as ApiError;
     }
   },
@@ -326,64 +372,67 @@ export const authApi = {
 const mockLogin = async (credentials: LoginCredentials): Promise<LoginResponse> => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1000));
-  
+
   console.log('Mock Login API called with:', credentials);
-  
+
   // Mock different scenarios for testing Dalmia API responses
   if (credentials.email === 'unauthorized@test.com' || credentials.email === 'blocked@dalmia.com') {
     // Simulate DM1004 error response structure
     const mockDalmiaErrorResponse = {
       resp_code: 'DM1004',
       resp_msg: 'You are not authorised to login. Please contact digital support.',
-      resp_body: null
+      resp_body: null,
     };
-    
+
     throw {
       message: mockDalmiaErrorResponse.resp_msg,
       status: 401,
       dalmiaCode: mockDalmiaErrorResponse.resp_code,
     } as ApiError & { dalmiaCode: string };
   }
-  
+
   if (credentials.email === 'inactive@dalmia.com') {
     // Simulate another error response for testing
     const mockDalmiaErrorResponse = {
       resp_code: 'DM1006',
       resp_msg: 'Your account is temporarily inactive. Please contact HR department.',
-      resp_body: null
+      resp_body: null,
     };
-    
+
     throw {
       message: mockDalmiaErrorResponse.resp_msg,
       status: 403,
       dalmiaCode: mockDalmiaErrorResponse.resp_code,
     } as ApiError & { dalmiaCode: string };
   }
-  
+
   // Mock authentication logic - success case
-  if ((credentials.email === 'admin@dalmia.com' || credentials.email === 'user@dalmia.com') && credentials.password === 'password') {
+  if (
+    (credentials.email === 'admin@dalmia.com' || credentials.email === 'user@dalmia.com') &&
+    credentials.password === 'password'
+  ) {
     // Simulate DM1002 success response structure
     const mockDalmiaSuccessResponse = {
       resp_code: 'DM1002',
       resp_msg: 'OTP sent successfully to your registered mobile number.',
       resp_body: {
         sessionId: 'mock-session-' + Date.now(),
-        otpExpiry: 300 // 5 minutes
-      }
+        otpExpiry: 300, // 5 minutes
+      },
     };
-    
+
     return {
       requiresOTP: true,
-      message: mockDalmiaSuccessResponse.resp_msg
+      message: mockDalmiaSuccessResponse.resp_msg,
     };
   } else {
     // Simulate DM1001 invalid credentials response
     const mockDalmiaErrorResponse = {
       resp_code: 'DM1001',
       resp_msg: 'Invalid mobile number or password. Please try again.',
-      resp_body: null
+      resp_body: null,
     };
-    
+
     throw {
       message: mockDalmiaErrorResponse.resp_msg,
       status: 401,
@@ -395,25 +444,25 @@ const mockLogin = async (credentials: LoginCredentials): Promise<LoginResponse> 
 const mockVerifyOTP = async (data: OTPVerificationData): Promise<LoginResponse> => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 800));
-  
+
   console.log('Mock OTP Verify API called with:', { email: data.email, otp: data.otp });
-  
+
   // Check if OTP is correct (demo OTP: 123456)
   if (data.otp !== '123456') {
     // Simulate DM1003 invalid OTP response structure
     const mockDalmiaErrorResponse = {
       resp_code: 'DM1003',
       resp_msg: 'Invalid OTP. Please enter the correct 6-digit OTP.',
-      resp_body: null
+      resp_body: null,
     };
-    
+
     throw {
       message: mockDalmiaErrorResponse.resp_msg,
       status: 400,
       dalmiaCode: mockDalmiaErrorResponse.resp_code,
     } as ApiError & { dalmiaCode: string };
   }
-  
+
   // Verify credentials again and return user data
   if (data.email === 'admin@dalmia.com' && data.password === 'password') {
     // Simulate DM1002 success response structure
@@ -426,19 +475,19 @@ const mockVerifyOTP = async (data: OTPVerificationData): Promise<LoginResponse> 
         userRole: 'admin',
         accessToken: 'mock-jwt-token-' + Date.now(),
         refreshToken: 'mock-refresh-token-' + Date.now(),
-        permissions: ['read', 'write', 'admin']
-      }
+        permissions: ['read', 'write', 'admin'],
+      },
     };
-    
+
     return {
       user: {
         id: mockDalmiaSuccessResponse.resp_body.userId,
         name: mockDalmiaSuccessResponse.resp_body.userName,
         email: data.email,
-        role: mockDalmiaSuccessResponse.resp_body.userRole
+        role: mockDalmiaSuccessResponse.resp_body.userRole,
       },
       token: mockDalmiaSuccessResponse.resp_body.accessToken,
-      message: mockDalmiaSuccessResponse.resp_msg
+      message: mockDalmiaSuccessResponse.resp_msg,
     };
   } else if (data.email === 'user@dalmia.com' && data.password === 'password') {
     // Simulate DM1002 success response structure
@@ -451,28 +500,28 @@ const mockVerifyOTP = async (data: OTPVerificationData): Promise<LoginResponse> 
         userRole: 'user',
         accessToken: 'mock-jwt-token-' + Date.now(),
         refreshToken: 'mock-refresh-token-' + Date.now(),
-        permissions: ['read']
-      }
+        permissions: ['read'],
+      },
     };
-    
+
     return {
       user: {
         id: mockDalmiaSuccessResponse.resp_body.userId,
         name: mockDalmiaSuccessResponse.resp_body.userName,
         email: data.email,
-        role: mockDalmiaSuccessResponse.resp_body.userRole
+        role: mockDalmiaSuccessResponse.resp_body.userRole,
       },
       token: mockDalmiaSuccessResponse.resp_body.accessToken,
-      message: mockDalmiaSuccessResponse.resp_msg
+      message: mockDalmiaSuccessResponse.resp_msg,
     };
   } else {
     // Simulate DM1005 session expired response
     const mockDalmiaErrorResponse = {
       resp_code: 'DM1005',
       resp_msg: 'Session expired. Please login again.',
-      resp_body: null
+      resp_body: null,
     };
-    
+
     throw {
       message: mockDalmiaErrorResponse.resp_msg,
       status: 401,
@@ -484,35 +533,35 @@ const mockVerifyOTP = async (data: OTPVerificationData): Promise<LoginResponse> 
 const mockResendOTP = async (email: string): Promise<void> => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 500));
-  
+
   console.log('Mock Resend OTP API called for:', email);
-  
+
   // Check if email is valid
   if (email !== 'admin@dalmia.com' && email !== 'user@dalmia.com') {
     // Simulate DM1001 invalid user response structure
     const mockDalmiaErrorResponse = {
       resp_code: 'DM1001',
       resp_msg: 'Invalid user. Please check your registered mobile number.',
-      resp_body: null
+      resp_body: null,
     };
-    
+
     throw {
       message: mockDalmiaErrorResponse.resp_msg,
       status: 400,
       dalmiaCode: mockDalmiaErrorResponse.resp_code,
     } as ApiError & { dalmiaCode: string };
   }
-  
+
   // Simulate DM1002 success response structure for resend
   const mockDalmiaSuccessResponse = {
     resp_code: 'DM1002',
     resp_msg: 'OTP resent successfully to your registered mobile number.',
     resp_body: {
       sessionId: 'mock-session-resend-' + Date.now(),
-      otpExpiry: 300 // 5 minutes
-    }
+      otpExpiry: 300, // 5 minutes
+    },
   };
-  
+
   console.log('Mock Resend OTP Success:', mockDalmiaSuccessResponse);
 };
 

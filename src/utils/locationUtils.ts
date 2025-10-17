@@ -39,7 +39,7 @@ export const getCurrentLocation = (): Promise<LocationData> => {
     }
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      position => {
         const locationData: LocationData = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
@@ -48,9 +48,9 @@ export const getCurrentLocation = (): Promise<LocationData> => {
         };
         resolve(locationData);
       },
-      (error) => {
+      error => {
         let errorMessage = 'Failed to get location.';
-        
+
         switch (error.code) {
           case error.PERMISSION_DENIED:
             errorMessage = 'Location access denied by user. Please enable location services.';
@@ -65,7 +65,7 @@ export const getCurrentLocation = (): Promise<LocationData> => {
             errorMessage = 'An unknown error occurred while retrieving location.';
             break;
         }
-        
+
         reject({
           code: error.code,
           message: errorMessage,
@@ -104,7 +104,7 @@ export const getAddressFromCoordinates = async (
     }
 
     const data = await response.json();
-    
+
     if (data && data.display_name) {
       return data.display_name;
     } else {
@@ -122,19 +122,15 @@ export const getAddressFromCoordinates = async (
  * @returns Promise<LocationData> - Location data with address
  */
 export const getCurrentLocationWithAddress = async (): Promise<LocationData> => {
-  try {
-    const location = await getCurrentLocation();
-    
-    // Get address from coordinates
-    const address = await getAddressFromCoordinates(location.latitude, location.longitude);
-    
-    return {
-      ...location,
-      address,
-    };
-  } catch (error) {
-    throw error;
-  }
+  const location = await getCurrentLocation();
+
+  // Get address from coordinates
+  const address = await getAddressFromCoordinates(location.latitude, location.longitude);
+
+  return {
+    ...location,
+    address,
+  };
 };
 
 /**

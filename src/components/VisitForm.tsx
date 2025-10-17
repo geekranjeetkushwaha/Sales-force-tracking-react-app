@@ -1,10 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Form, Input, Radio, Button, Modal, Spin, Alert, App } from 'antd';
-import { CameraOutlined, CheckCircleOutlined, LoadingOutlined, EnvironmentOutlined, ReloadOutlined, ExclamationCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import { getCurrentLocationWithAddress, formatLocationForAPI, type LocationData } from '../utils/locationUtils';
+import {
+  CameraOutlined,
+  CheckCircleOutlined,
+  LoadingOutlined,
+  EnvironmentOutlined,
+  ReloadOutlined,
+  ExclamationCircleOutlined,
+  ArrowLeftOutlined,
+} from '@ant-design/icons';
+import {
+  getCurrentLocationWithAddress,
+  formatLocationForAPI,
+  type LocationData,
+} from '../utils/locationUtils';
 import './VisitForm.css';
 
+// Form types
+interface VisitFormValues {
+  customerId: string;
+  customerType: string;
+  visitType: string;
+  visitMode: string;
+  skuDetails: string;
+  remarks: string;
+}
 
 const VisitForm: React.FC = () => {
   const location = useLocation();
@@ -19,7 +40,9 @@ const VisitForm: React.FC = () => {
   const [cameraLoading, setCameraLoading] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
   const [captureLocation, setCaptureLocation] = useState<LocationData | null>(null);
-  const [locationPermission, setLocationPermission] = useState<'checking' | 'granted' | 'denied' | 'unavailable'>('checking');
+  const [locationPermission, setLocationPermission] = useState<
+    'checking' | 'granted' | 'denied' | 'unavailable'
+  >('checking');
   const [locationError, setLocationError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -43,7 +66,7 @@ const VisitForm: React.FC = () => {
         navigator.geolocation.getCurrentPosition(resolve, reject, {
           timeout: 10000,
           enableHighAccuracy: true,
-          maximumAge: 300000 // 5 minutes
+          maximumAge: 300000, // 5 minutes
         });
       });
 
@@ -51,16 +74,21 @@ const VisitForm: React.FC = () => {
         setLocationPermission('granted');
         setLocationError(null);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Location permission check failed:', error);
 
-      if (error.code === 1) { // PERMISSION_DENIED
+      if (error && typeof error === 'object' && 'code' in error && error.code === 1) {
+        // PERMISSION_DENIED
         setLocationPermission('denied');
-        setLocationError('Location access denied. Please enable location services and grant permission to continue.');
-      } else if (error.code === 2) { // POSITION_UNAVAILABLE
+        setLocationError(
+          'Location access denied. Please enable location services and grant permission to continue.'
+        );
+      } else if (error && typeof error === 'object' && 'code' in error && error.code === 2) {
+        // POSITION_UNAVAILABLE
         setLocationPermission('unavailable');
         setLocationError('Location information is unavailable. Please check your GPS settings.');
-      } else if (error.code === 3) { // TIMEOUT
+      } else if (error && typeof error === 'object' && 'code' in error && error.code === 3) {
+        // TIMEOUT
         setLocationPermission('denied');
         setLocationError('Location request timed out. Please try again.');
       } else {
@@ -81,7 +109,7 @@ const VisitForm: React.FC = () => {
     navigate('/');
   };
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: VisitFormValues) => {
     try {
       setLocationLoading(true);
 
@@ -106,17 +134,18 @@ const VisitForm: React.FC = () => {
         onClose: () => {
           // Navigate to homepage after message closes
           navigate('/', { replace: true });
-        }
+        },
       });
 
       // Also navigate after a short delay as fallback
       setTimeout(() => {
         navigate('/', { replace: true });
       }, 2000);
-
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error submitting form:', error);
-      message.error(error.message || 'Failed to submit form. Please try again.');
+      message.error(
+        error instanceof Error ? error.message : 'Failed to submit form. Please try again.'
+      );
     } finally {
       setLocationLoading(false);
     }
@@ -136,9 +165,9 @@ const VisitForm: React.FC = () => {
         video: {
           facingMode: 'environment', // Use back camera on mobile if available
           width: { ideal: 1280 },
-          height: { ideal: 720 }
+          height: { ideal: 720 },
         },
-        audio: false
+        audio: false,
       });
 
       streamRef.current = stream;
@@ -151,16 +180,16 @@ const VisitForm: React.FC = () => {
           videoRef.current.srcObject = stream;
         }
       }, 100);
-    } catch (error: any) {
+    } catch (error) {
       setCameraLoading(false);
       console.error('Error accessing camera:', error);
 
       let errorMessage = 'Unable to access camera. ';
-      if (error.name === 'NotAllowedError') {
+      if (error instanceof Error && error.name === 'NotAllowedError') {
         errorMessage += 'Please grant camera permissions and try again.';
-      } else if (error.name === 'NotFoundError') {
+      } else if (error instanceof Error && error.name === 'NotFoundError') {
         errorMessage += 'No camera found on this device.';
-      } else if (error.name === 'NotSupportedError') {
+      } else if (error instanceof Error && error.name === 'NotSupportedError') {
         errorMessage += 'Camera not supported on this browser.';
       } else {
         errorMessage += 'Please check your camera and try again.';
@@ -208,7 +237,7 @@ const VisitForm: React.FC = () => {
           });
 
           console.log('Captured verification location:', verificationLocation);
-        } catch (locationError: any) {
+        } catch (locationError) {
           // Still allow image capture even if location fails
           console.warn('Failed to capture location:', locationError);
 
@@ -232,7 +261,8 @@ const VisitForm: React.FC = () => {
           setIsVerified(true);
 
           message.warning({
-            content: 'Image captured but location access failed. You can still proceed with the form.',
+            content:
+              'Image captured but location access failed. You can still proceed with the form.',
             duration: 4,
           });
         }
@@ -263,7 +293,9 @@ const VisitForm: React.FC = () => {
           <div className="text-center py-8">
             <Spin size="large" />
             <p className="text-gray-600 mt-4 text-lg">Checking location permissions...</p>
-            <p className="text-gray-500 text-sm mt-2">Please wait while we verify location access</p>
+            <p className="text-gray-500 text-sm mt-2">
+              Please wait while we verify location access
+            </p>
           </div>
         </div>
       </div>
@@ -279,7 +311,10 @@ const VisitForm: React.FC = () => {
             <h2 className="text-xl font-bold text-red-600 mb-4">Location Access Required</h2>
             <Alert
               message="Location Permission Needed"
-              description={locationError || 'Please allow location access to continue with the visit form. Location is required for verification purposes.'}
+              description={
+                locationError ||
+                'Please allow location access to continue with the visit form. Location is required for verification purposes.'
+              }
               type="error"
               showIcon
               className="mb-6 text-left"
@@ -303,11 +338,7 @@ const VisitForm: React.FC = () => {
               >
                 Retry Location Access
               </Button>
-              <Button
-                type="default"
-                onClick={() => navigate('/')}
-                className="w-full"
-              >
+              <Button type="default" onClick={() => navigate('/')} className="w-full">
                 Go Back to Home
               </Button>
             </div>
@@ -337,8 +368,12 @@ const VisitForm: React.FC = () => {
           <h2 className="text-2xl font-bold text-purple-700 mb-4 text-center">Visit Details</h2>
           {visitDetails && (
             <div className="mb-6 text-center">
-              <p className="text-gray-700 text-lg"><strong>Counter:</strong> {visitDetails.name}</p>
-              <p className="text-gray-500 mt-2"><strong>Code:</strong> {visitDetails.code}</p>
+              <p className="text-gray-700 text-lg">
+                <strong>Counter:</strong> {visitDetails.name}
+              </p>
+              <p className="text-gray-500 mt-2">
+                <strong>Code:</strong> {visitDetails.code}
+              </p>
             </div>
           )}
 
@@ -350,7 +385,8 @@ const VisitForm: React.FC = () => {
                 <span className="font-medium">Visit Check-in Location:</span>
               </div>
               <div className="text-gray-600 text-xs mt-1">
-                {checkinLocationData.address || `${checkinLocationData.latitude.toFixed(6)}, ${checkinLocationData.longitude.toFixed(6)}`}
+                {checkinLocationData.address ||
+                  `${checkinLocationData.latitude.toFixed(6)}, ${checkinLocationData.longitude.toFixed(6)}`}
               </div>
               <div className="text-gray-500 text-xs mt-1">
                 Accuracy: ±{Math.round(checkinLocationData.accuracy)}m
@@ -365,7 +401,9 @@ const VisitForm: React.FC = () => {
                 <EnvironmentOutlined />
                 <span className="font-medium">Location access granted</span>
               </div>
-              <p className="text-green-700 text-xs mt-1">Ready to capture verification and submit locations</p>
+              <p className="text-green-700 text-xs mt-1">
+                Ready to capture verification and submit locations
+              </p>
             </div>
           )}
 
@@ -403,7 +441,8 @@ const VisitForm: React.FC = () => {
                           <span className="font-medium">Verification Location Captured:</span>
                         </div>
                         <div className="text-gray-600 mt-1">
-                          {captureLocation.address || `${captureLocation.latitude.toFixed(6)}, ${captureLocation.longitude.toFixed(6)}`}
+                          {captureLocation.address ||
+                            `${captureLocation.latitude.toFixed(6)}, ${captureLocation.longitude.toFixed(6)}`}
                         </div>
                         <div className="text-gray-500 text-xs mt-1">
                           Accuracy: ±{Math.round(captureLocation.accuracy)}m
@@ -428,7 +467,9 @@ const VisitForm: React.FC = () => {
             layout="vertical"
             onFinish={onFinish}
             disabled={!isVerified || locationPermission !== 'granted'}
-            className={isVerified && locationPermission === 'granted' ? 'form-enabled' : 'form-disabled'}
+            className={
+              isVerified && locationPermission === 'granted' ? 'form-enabled' : 'form-disabled'
+            }
           >
             <Form.Item
               label="Purpose of Visit"
@@ -485,7 +526,10 @@ const VisitForm: React.FC = () => {
             <div className="text-center">
               {cameraLoading ? (
                 <div className="camera-loading">
-                  <Spin size="large" indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+                  <Spin
+                    size="large"
+                    indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+                  />
                   <p className="camera-loading-text">Initializing camera...</p>
                 </div>
               ) : (

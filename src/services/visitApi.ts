@@ -74,12 +74,16 @@ export const visitApi = {
   // Get all visits
   getAll: async (params?: VisitSearchParams): Promise<VisitResponse> => {
     try {
-      const response: AxiosResponse<VisitResponse> = await api.get(VISIT_ENDPOINTS.GET_ALL, { params });
+      const response: AxiosResponse<VisitResponse> = await api.get(VISIT_ENDPOINTS.GET_ALL, {
+        params,
+      });
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to fetch visits',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to fetch visits',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -87,12 +91,16 @@ export const visitApi = {
   // Get visit by ID
   getById: async (id: string): Promise<Visit> => {
     try {
-      const response: AxiosResponse<{ visit: Visit }> = await api.get(VISIT_ENDPOINTS.GET_BY_ID(id));
+      const response: AxiosResponse<{ visit: Visit }> = await api.get(
+        VISIT_ENDPOINTS.GET_BY_ID(id)
+      );
       return response.data.visit;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to fetch visit',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to fetch visit',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -100,12 +108,17 @@ export const visitApi = {
   // Start a new visit
   startVisit: async (visitData: CreateVisitData): Promise<Visit> => {
     try {
-      const response: AxiosResponse<{ visit: Visit }> = await api.post(VISIT_ENDPOINTS.START_VISIT, visitData);
+      const response: AxiosResponse<{ visit: Visit }> = await api.post(
+        VISIT_ENDPOINTS.START_VISIT,
+        visitData
+      );
       return response.data.visit;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to start visit',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to start visit',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -113,12 +126,17 @@ export const visitApi = {
   // Update visit
   update: async (id: string, visitData: UpdateVisitData): Promise<Visit> => {
     try {
-      const response: AxiosResponse<{ visit: Visit }> = await api.put(VISIT_ENDPOINTS.UPDATE(id), visitData);
+      const response: AxiosResponse<{ visit: Visit }> = await api.put(
+        VISIT_ENDPOINTS.UPDATE(id),
+        visitData
+      );
       return response.data.visit;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to update visit',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to update visit',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -126,14 +144,19 @@ export const visitApi = {
   // End a visit
   endVisit: async (id: string, finalRemarks?: string): Promise<Visit> => {
     try {
-      const response: AxiosResponse<{ visit: Visit }> = await api.put(VISIT_ENDPOINTS.END_VISIT(id), {
-        finalRemarks
-      });
+      const response: AxiosResponse<{ visit: Visit }> = await api.put(
+        VISIT_ENDPOINTS.END_VISIT(id),
+        {
+          finalRemarks,
+        }
+      );
       return response.data.visit;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to end visit',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to end visit',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -141,12 +164,16 @@ export const visitApi = {
   // Get current ongoing visits
   getCurrentVisits: async (): Promise<Visit[]> => {
     try {
-      const response: AxiosResponse<{ visits: Visit[] }> = await api.get(VISIT_ENDPOINTS.GET_CURRENT_VISITS);
+      const response: AxiosResponse<{ visits: Visit[] }> = await api.get(
+        VISIT_ENDPOINTS.GET_CURRENT_VISITS
+      );
       return response.data.visits;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to fetch current visits',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to fetch current visits',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -154,12 +181,16 @@ export const visitApi = {
   // Get visits by date
   getByDate: async (date: string): Promise<Visit[]> => {
     try {
-      const response: AxiosResponse<{ visits: Visit[] }> = await api.get(VISIT_ENDPOINTS.GET_VISITS_BY_DATE(date));
+      const response: AxiosResponse<{ visits: Visit[] }> = await api.get(
+        VISIT_ENDPOINTS.GET_VISITS_BY_DATE(date)
+      );
       return response.data.visits;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to fetch visits by date',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to fetch visits by date',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -167,12 +198,16 @@ export const visitApi = {
   // Get visits by user
   getByUser: async (userId: string): Promise<Visit[]> => {
     try {
-      const response: AxiosResponse<{ visits: Visit[] }> = await api.get(VISIT_ENDPOINTS.GET_VISITS_BY_USER(userId));
+      const response: AxiosResponse<{ visits: Visit[] }> = await api.get(
+        VISIT_ENDPOINTS.GET_VISITS_BY_USER(userId)
+      );
       return response.data.visits;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to fetch visits by user',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to fetch visits by user',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -180,12 +215,16 @@ export const visitApi = {
   // Get visits by counter
   getByCounter: async (counterId: string): Promise<Visit[]> => {
     try {
-      const response: AxiosResponse<{ visits: Visit[] }> = await api.get(VISIT_ENDPOINTS.GET_VISITS_BY_COUNTER(counterId));
+      const response: AxiosResponse<{ visits: Visit[] }> = await api.get(
+        VISIT_ENDPOINTS.GET_VISITS_BY_COUNTER(counterId)
+      );
       return response.data.visits;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to fetch visits by counter',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to fetch visits by counter',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -194,10 +233,12 @@ export const visitApi = {
   delete: async (id: string): Promise<void> => {
     try {
       await api.delete(VISIT_ENDPOINTS.DELETE(id));
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to delete visit',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to delete visit',
+        status: apiError?.response?.status || 500,
       };
     }
   },

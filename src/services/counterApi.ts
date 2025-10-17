@@ -54,12 +54,16 @@ export const counterApi = {
   // Get all counters
   getAll: async (params?: CounterSearchParams): Promise<CounterResponse> => {
     try {
-      const response: AxiosResponse<CounterResponse> = await api.get(COUNTER_ENDPOINTS.GET_ALL, { params });
+      const response: AxiosResponse<CounterResponse> = await api.get(COUNTER_ENDPOINTS.GET_ALL, {
+        params,
+      });
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to fetch counters',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to fetch counters',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -67,12 +71,16 @@ export const counterApi = {
   // Get counter by ID
   getById: async (id: string): Promise<Counter> => {
     try {
-      const response: AxiosResponse<{ counter: Counter }> = await api.get(COUNTER_ENDPOINTS.GET_BY_ID(id));
+      const response: AxiosResponse<{ counter: Counter }> = await api.get(
+        COUNTER_ENDPOINTS.GET_BY_ID(id)
+      );
       return response.data.counter;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to fetch counter',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to fetch counter',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -80,12 +88,17 @@ export const counterApi = {
   // Create new counter
   create: async (counterData: CreateCounterData): Promise<Counter> => {
     try {
-      const response: AxiosResponse<{ counter: Counter }> = await api.post(COUNTER_ENDPOINTS.CREATE, counterData);
+      const response: AxiosResponse<{ counter: Counter }> = await api.post(
+        COUNTER_ENDPOINTS.CREATE,
+        counterData
+      );
       return response.data.counter;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to create counter',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to create counter',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -93,12 +106,17 @@ export const counterApi = {
   // Update counter
   update: async (id: string, counterData: UpdateCounterData): Promise<Counter> => {
     try {
-      const response: AxiosResponse<{ counter: Counter }> = await api.put(COUNTER_ENDPOINTS.UPDATE(id), counterData);
+      const response: AxiosResponse<{ counter: Counter }> = await api.put(
+        COUNTER_ENDPOINTS.UPDATE(id),
+        counterData
+      );
       return response.data.counter;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to update counter',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to update counter',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -107,10 +125,12 @@ export const counterApi = {
   delete: async (id: string): Promise<void> => {
     try {
       await api.delete(COUNTER_ENDPOINTS.DELETE(id));
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to delete counter',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to delete counter',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -118,14 +138,19 @@ export const counterApi = {
   // Search counters
   search: async (searchQuery: string): Promise<Counter[]> => {
     try {
-      const response: AxiosResponse<{ counters: Counter[] }> = await api.get(COUNTER_ENDPOINTS.SEARCH, {
-        params: { q: searchQuery }
-      });
+      const response: AxiosResponse<{ counters: Counter[] }> = await api.get(
+        COUNTER_ENDPOINTS.SEARCH,
+        {
+          params: { q: searchQuery },
+        }
+      );
       return response.data.counters;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to search counters',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to search counters',
+        status: apiError?.response?.status || 500,
       };
     }
   },
@@ -133,12 +158,16 @@ export const counterApi = {
   // Get counters by territory
   getByTerritory: async (territoryId: string): Promise<Counter[]> => {
     try {
-      const response: AxiosResponse<{ counters: Counter[] }> = await api.get(COUNTER_ENDPOINTS.GET_BY_TERRITORY(territoryId));
+      const response: AxiosResponse<{ counters: Counter[] }> = await api.get(
+        COUNTER_ENDPOINTS.GET_BY_TERRITORY(territoryId)
+      );
       return response.data.counters;
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const apiError = error as any;
       throw {
-        message: error.response?.data?.message || 'Failed to fetch counters by territory',
-        status: error.response?.status || 500,
+        message: apiError?.response?.data?.message || 'Failed to fetch counters by territory',
+        status: apiError?.response?.status || 500,
       };
     }
   },

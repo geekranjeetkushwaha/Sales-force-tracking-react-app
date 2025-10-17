@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '../auth/useAuth';
 import ProtectedRoute from '../auth/ProtectedRoute';
 import Login from '../pages/Login/Login';
 import OTP from '../pages/OTP/OTP';
@@ -12,45 +12,31 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route 
-        path="/login" 
-        element={
-          isAuthenticated ? 
-          <Navigate to="/" replace /> : 
-          <Login />
-        } 
-      />
-      <Route 
-        path="/otp" 
-        element={
-          isAuthenticated ? 
-          <Navigate to="/" replace /> : 
-          <OTP />
-        } 
-      />
-      <Route 
-        path="/" 
+      <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} />
+      <Route path="/otp" element={isAuthenticated ? <Navigate to="/" replace /> : <OTP />} />
+      <Route
+        path="/"
         element={
           <ProtectedRoute>
             <Home />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/visit" 
+      <Route
+        path="/visit"
         element={
           <ProtectedRoute>
             <Visit />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/pjp" 
+      <Route
+        path="/pjp"
         element={
           <ProtectedRoute>
             <PJP />
           </ProtectedRoute>
-        } 
+        }
       />
     </Routes>
   );

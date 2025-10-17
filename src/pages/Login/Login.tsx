@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, Typography, App } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useAuth } from '../../auth/AuthContext';
+import { useAuth } from '../../auth/useAuth';
 import type { LoginCredentials } from '../../auth/types';
 import './Login.css';
 
@@ -19,16 +19,16 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       const response = await login(values);
-      console.log(response,'response--')
+      console.log(response, 'response--');
       if (response.requiresOTP) {
         // Redirect to OTP page with credentials
         message.success(response.message || 'OTP sent to your email!');
-        navigate('/otp', { 
-          state: { 
-            email: values.email, 
-            password: values.password 
+        navigate('/otp', {
+          state: {
+            email: values.email,
+            password: values.password,
           },
-          replace: true 
+          replace: true,
         });
       } else {
         // Direct login success
@@ -38,13 +38,13 @@ const Login: React.FC = () => {
     } catch (error: unknown) {
       // Handle API errors with proper error message
       let errorMessage = 'Login failed. Please try again.';
-      
+
       if (error && typeof error === 'object') {
         if ('message' in error && typeof error.message === 'string') {
           errorMessage = error.message;
         }
       }
-      
+
       message.error({
         content: errorMessage,
         duration: 5,
@@ -65,9 +65,7 @@ const Login: React.FC = () => {
             <Title level={2} className="login-title">
               Sales Force Tracking
             </Title>
-            <Text className="login-subtitle">
-              Sign in to access your dashboard
-            </Text>
+            <Text className="login-subtitle">Sign in to access your dashboard</Text>
           </div>
 
           <Form
@@ -83,7 +81,7 @@ const Login: React.FC = () => {
               label="Email"
               rules={[
                 { required: true, message: 'Please input your email!' },
-                { type: 'email', message: 'Please enter a valid email!' }
+                { type: 'email', message: 'Please enter a valid email!' },
               ]}
             >
               <Input
@@ -98,7 +96,7 @@ const Login: React.FC = () => {
               label="Password"
               rules={[
                 { required: true, message: 'Please input your password!' },
-                { min: 6, message: 'Password must be at least 6 characters!' }
+                { min: 6, message: 'Password must be at least 6 characters!' },
               ]}
             >
               <Input.Password
