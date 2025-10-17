@@ -1,0 +1,15 @@
+# Ignore artifacts:
+dist/
+dist-*/
+build/
+node_modules/
+
+# Ignore configuration files:
+package-lock.json
+.env*
+.husky/
+.git/
+
+# Ignore specific file types:
+*.log
+*.lock
