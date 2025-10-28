@@ -2,9 +2,6 @@ import React from 'react';
 import { Modal, Button, Descriptions, Tag, Space, Divider } from 'antd';
 import {
   CloseOutlined,
-  EnvironmentOutlined,
-  PhoneOutlined,
-  UserOutlined,
   CalendarOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
@@ -121,47 +118,6 @@ const PJPDetails: React.FC<PJPDetailsProps> = ({
           labelStyle={{ fontWeight: 'bold', color: '#374151' }}
           contentStyle={{ color: '#6B7280' }}
         >
-          {data.address && (
-            <Descriptions.Item
-              label={
-                <Space>
-                  <EnvironmentOutlined className="text-red-500" />
-                  Address
-                </Space>
-              }
-            >
-              {data.address}
-            </Descriptions.Item>
-          )}
-
-          {data.contactPerson && (
-            <Descriptions.Item
-              label={
-                <Space>
-                  <UserOutlined className="text-blue-500" />
-                  Contact Person
-                </Space>
-              }
-            >
-              {data.contactPerson}
-            </Descriptions.Item>
-          )}
-
-          {data.phone && (
-            <Descriptions.Item
-              label={
-                <Space>
-                  <PhoneOutlined className="text-green-500" />
-                  Phone
-                </Space>
-              }
-            >
-              <a href={`tel:${data.phone}`} className="text-blue-600 hover:text-blue-800">
-                {data.phone}
-              </a>
-            </Descriptions.Item>
-          )}
-
           {data.lastVisit && (
             <Descriptions.Item
               label={
@@ -171,7 +127,7 @@ const PJPDetails: React.FC<PJPDetailsProps> = ({
                 </Space>
               }
             >
-              {data.lastVisit}
+              {data.lastVisit} {data.visitTime}
             </Descriptions.Item>
           )}
 

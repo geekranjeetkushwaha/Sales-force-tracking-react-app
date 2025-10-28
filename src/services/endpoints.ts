@@ -11,10 +11,10 @@ export const API_CONFIG = {
     'Content-Type': 'application/json',
     'user-agent': 'TSO-Web/1.0.0',
     'x-appname': 'TSO',
-    'platform': 'web',
+    platform: 'web',
     'app-name': 'TSO',
     'app-version': '1.0.0',
-    'accept': '*/*',
+    accept: '*/*',
     'accept-encoding': 'gzip',
   },
 } as const;
@@ -23,6 +23,7 @@ export const API_CONFIG = {
 export const AUTH_ENDPOINTS = {
   LOGIN_OTP: '/dalmiabharat-auth/auth/login_otp',
   VERIFY_OTP: '/dalmiabharat-auth/auth/verify_otp',
+  CHECK_VALID_USER_NEW_OTP: '/dalmiabharat-auth/auth/checkValidUserNewOTP',
   LOGOUT: '/dalmiabharat-auth/auth/logout',
   REFRESH_TOKEN: '/dalmiabharat-auth/auth/refresh',
   // Legacy endpoints (if needed)
@@ -143,7 +144,10 @@ export const buildUrl = (endpoint: string): string => {
 };
 
 // Utility function to build URL with query parameters
-export const buildUrlWithParams = (endpoint: string, params: Record<string, string | number>): string => {
+export const buildUrlWithParams = (
+  endpoint: string,
+  params: Record<string, string | number>
+): string => {
   const url = new URL(endpoint, API_CONFIG.BASE_URL);
   Object.entries(params).forEach(([key, value]) => {
     url.searchParams.append(key, value.toString());

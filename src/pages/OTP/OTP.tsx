@@ -59,11 +59,30 @@ const OTP: React.FC = () => {
 
     setLoading(true);
     try {
+      // Current OTP verification method
       await verifyOTP({
         email: state.email,
         password: state.password,
         otp: values.otp,
       });
+
+      /* 
+      // Alternative: Use new OTP validation method
+      // This uses the new API endpoint: /dalmiabharat-auth/auth/checkValidUserNewOTP
+      const payload = buildOTPValidationPayload({
+        otpCode: values.otp,
+        mobileNumber: state.email,
+        userId: 'TSO1760521103420', // Your user ID
+        // Optional: otpTokenId and referenceId will be auto-generated if not provided
+      });
+      
+      const result = await validateNewOTP(payload);
+      if (result.success) {
+        message.success(result.message);
+        navigate('/', { replace: true });
+      }
+      */
+
       message.success('OTP verified successfully!');
       navigate('/', { replace: true });
     } catch (error: unknown) {

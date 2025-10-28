@@ -6,6 +6,8 @@ import type {
   User,
   OTPVerificationData,
   LoginResponse,
+  NewOTPValidationPayload,
+  NewOTPValidationResponse,
 } from './types';
 import { authApi, type ApiError } from '../services/api';
 import { AuthContext } from './context';
@@ -153,6 +155,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const validateNewOTP = async (
+    payload: NewOTPValidationPayload
+  ): Promise<NewOTPValidationResponse> => {
+    try {
+      const response = await authApi.validateNewOTP(payload);
+
+      // If successful and contains user data, store auth information
+      if (response.success && response.data?.user && response.data?.token) {
+        localStorage.setItem('authToken', response.data.token);
+        localStorage.setItem('userData', JSON.stringify(response.data.user));
+
+        if (response.data.refreshToken) {
+          localStorage.setItem('refreshToken', response.data.refreshToken);
+        }
+
+        dispatch({ type: 'LOGIN_SUCCESS', payload: response.data.user });
+      }
+
+      return response;
+    } catch (error: unknown) {
+      // Handle API errors
+      if (error && typeof error === 'object' && 'message' in error) {
+        const apiError = error as ApiError;
+        throw new Error(apiError.message);
+      }
+
+      throw new Error('OTP validation failed. Please try again.');
+    }
+  };
+
   const logout = async (): Promise<void> => {
     try {
       // Call logout API
@@ -171,6 +203,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     ...state,
     login,
     verifyOTP,
+    validateNewOTP,
     resendOTP,
     logout,
   };

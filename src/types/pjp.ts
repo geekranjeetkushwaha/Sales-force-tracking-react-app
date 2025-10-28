@@ -28,6 +28,7 @@ export interface PJPDetails {
   contactPerson: string;
   phone: string;
   lastVisit: string;
+  visitTime: string;
   category: string;
   territory: string;
   region: string;

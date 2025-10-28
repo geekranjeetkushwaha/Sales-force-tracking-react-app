@@ -153,6 +153,7 @@ export default function PJPApp() {
       territory: '50040101000001',
       region: 'North Region',
       notes: item.remarks || 'No additional notes',
+      visitTime: item.visitTime || '',
     };
 
     setSelectedPJPItem(transformedItem);

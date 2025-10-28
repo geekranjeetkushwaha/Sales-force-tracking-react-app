@@ -53,29 +53,41 @@ export const useToast = () => {
 // Legacy class-based service for backward compatibility
 class ToastService {
   // Success message
-  success(content: string): void {
+  success(content: string, options?: ToastOptions): void {
     console.warn('Using legacy toast service. Consider using useToast hook instead.');
     // Fallback to console in case App context is not available
     console.log('Success:', content);
+    if (options?.duration) {
+      console.log(`Success will be shown for ${options.duration} seconds`);
+    }
   }
 
   // Error message
-  error(content: string): void {
+  error(content: string, options?: ToastOptions): void {
     console.warn('Using legacy toast service. Consider using useToast hook instead.');
     // Fallback to console in case App context is not available
     console.error('Error:', content);
+    if (options?.duration) {
+      console.log(`Error will be shown for ${options.duration} seconds`);
+    }
   }
 
   // Warning message
-  warning(content: string): void {
+  warning(content: string, options?: ToastOptions): void {
     console.warn('Using legacy toast service. Consider using useToast hook instead.');
     console.warn('Warning:', content);
+    if (options?.duration) {
+      console.log(`Warning will be shown for ${options.duration} seconds`);
+    }
   }
 
   // Info message
-  info(content: string): void {
+  info(content: string, options?: ToastOptions): void {
     console.warn('Using legacy toast service. Consider using useToast hook instead.');
     console.info('Info:', content);
+    if (options?.duration) {
+      console.log(`Info will be shown for ${options.duration} seconds`);
+    }
   }
 
   // Loading message
